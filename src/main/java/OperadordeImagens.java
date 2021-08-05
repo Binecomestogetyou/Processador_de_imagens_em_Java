@@ -304,7 +304,10 @@ public class OperadordeImagens {
         int[] pixelFromLista = lista.get(pivot);
 
         if(pixelFromLista[0] == pixel[0]) position = pivot;
-        else if(pixelFromLista[0] > pixel[0]) position = findRightPosition(pixel, lista.subList(pivot+1, lista.size()-1));
+        else if(pixelFromLista[0] > pixel[0]) {
+            if(lista.isEmpty())
+            position = pivot + findRightPosition(pixel, lista.subList(pivot, lista.size()-1));
+        }
         else position = findRightPosition(pixel, lista.subList(0, pivot-1));
 
         return position;
