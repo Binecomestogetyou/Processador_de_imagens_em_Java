@@ -292,11 +292,27 @@ public class OperadordeImagens {
 
     // Adds *pixel* to *lista* in an ordered way
     private void addPixelOrderedly(int[] pixel, List<int[]> lista){
-
+        lista.add(findRightPosition(pixel, lista), pixel);
     }
 
     /***********************************************************************************************************
      ***********************************************************************************************************/
+
+    private int findRightPosition(int[] pixel, List<int[]> lista) {
+        int position;
+        int pivot = (int)(lista.size()/2);
+        int[] pixelFromLista = lista.get(pivot);
+
+        if(pixelFromLista[0] == pixel[0]) position = pivot;
+        else if(pixelFromLista[0] > pixel[0]) position = findRightPosition(pixel, lista.subList(pivot+1, lista.size()-1));
+        else position = findRightPosition(pixel, lista.subList(0, pivot-1));
+
+        return position;
+    }
+
+    /***********************************************************************************************************
+     ***********************************************************************************************************/
+
 
     private static boolean findArray(int[] array, List<List<int[]>> list) {
         int pivot = array[0]/16;
