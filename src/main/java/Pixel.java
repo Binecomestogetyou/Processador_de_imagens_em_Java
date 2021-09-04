@@ -1,39 +1,81 @@
+import java.util.List;
+
 public class Pixel {
-    int red, green, blue, alpha;
     int[] array;
 
-    Pixel() {}
+    /***********************************************************
+     **********************************************************/
 
-    Pixel(int... channels){
-        red = channels[0];
-        green = channels[1];
-        blue = channels[2];
-
-        if(channels.length == 4) {
-            alpha = channels[3];
-            array = new int[]{channels[0], channels[1], channels[2], channels[3]};
-        }
-        else array = new int[]{channels[0], channels[1], channels[2]};
+    Pixel(int numBands) {
+        array = new int[numBands];
     }
+
+    /***********************************************************
+     **********************************************************/
+
+    Pixel(int[] array){
+        this.array = new int[array.length];
+
+        System.arraycopy(array, 0, this.array, 0, array.length);
+    }
+
+    /***********************************************************
+     **********************************************************/
+
+    int getRed(){
+        return array[0];
+    }
+
+    /***********************************************************
+     **********************************************************/
+
+    int getGreen(){
+        return array[1];
+    }
+
+    /***********************************************************
+     **********************************************************/
+
+    public int getBlue(){
+        return array[2];
+    }
+
+    /***********************************************************
+     **********************************************************/
 
     public int compareRed(Pixel comparer){
-        int result;
 
-        if(this.red > comparer.red) result = 1;
-        else if(this.red == comparer.red) result = 0;
-        else result = -1;
-
-        return result;
+        return Integer.compare(this.array[0], comparer.array[0]);
     }
 
-    public void build() {
-        red = array[0];
-        green = array[1];
-        blue = array[2];
+    /***********************************************************
+     **********************************************************/
 
-        try{
-            alpha = array[3];
+    int findPosition(List<Pixel> list){
+        int toReturn;
+        if(!list.contains(this)) toReturn = list.indexOf(this);
+        else{
+            toReturn = this.findPosition(list, 0, list.size() - 1);
         }
-        catch (IndexOutOfBoundsException e){}
+
+        return toReturn;
+    }
+
+    int findPosition(List<Pixel> list, int left, int right){
+        int middle = (right - left)/2;
+        /* Find Red */
+
+        switch(this.compareRed(list.get(middle))){
+            case -1:
+                this.findPosition(list, left, middle);
+                break;
+
+            case 0:
+                break;
+
+            case 1:
+                this.findPosition(list, middle, right);
+        }
+
     }
 }

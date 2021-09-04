@@ -1,12 +1,7 @@
-import org.javatuples.Pair;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -116,7 +111,7 @@ public class OperadordeImagens {
     // mais próxima a imagem final ficará da real
     void pixelador (BufferedImage origem, int fator)  {
         ImageToolkit pixeladorToolkit = new ImageToolkit(origem);
-        List<Pair> allFrequencies = new ArrayList<>();
+        Frequency allFrequencies = new Frequency();
         BufferedImage nova_imagem = new BufferedImage(origem.getWidth(), origem.getHeight(), origem.getType());
         WritableRaster fonte = origem.getRaster();
         WritableRaster destino = nova_imagem.getRaster();
@@ -127,9 +122,34 @@ public class OperadordeImagens {
         List<List<int[]>> partition = new ArrayList<>();
 
 
-        // Now we're gonna get the frequencies of each color
-        getFrequencies(pixeladorToolkit.fnt_raster, allFrequencies);
+        tempo = System.nanoTime();
 
+
+        // Now we're gonna get the frequencies of each color
+        Frequency.getFrequencies(pixeladorToolkit.fnt_raster, allFrequencies);
+
+        tempo = System.nanoTime() - tempo;
+        tempo = (long) (tempo / 1E9);
+
+        System.out.println("Finished getting all frequencies\nIt took " + tempo / 60 + "min e " + tempo % 60 + "seg to get all frequencies");
+
+
+
+        ////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////
+
+        //////////////////////////////////////////////////////////////
+
+        ///////////////////////////////////////////////////////////////
+
+        BufferedWriter writer = null;
+
+        try {
+            writer = new BufferedWriter(new FileWriter("/media/pan/13d6a39b-d40a-45dd-aea4-56393048d009/Programação/codigos_programas/java/filtro_de_imagens/out/frequencias"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(666);
+        }
 
 
       /*  for(int i = 0; i < 20 ; i++){
@@ -276,30 +296,13 @@ public class OperadordeImagens {
     /***********************************************************************************************************
      ***********************************************************************************************************/
 
-    private void getFrequencies(WritableRaster raster, List<Pair> lista) {
 
-        int altura = raster.getHeight();
-        int largura = raster.getWidth();
-        Pixel pixel_aux = new Pixel();
-
-        for(int linha = 0; linha < altura; linha++){
-            for(int pixel = 0; pixel < largura; largura++){
-                raster.getPixel(pixel, altura, pixel_aux.array);
-
-                pixel_aux.build();
-
-                Misc.incrementFrequenciesList(pixel_aux, lista);
-            }
-        }
-    }
 
     /***********************************************************************************************************
      ***********************************************************************************************************/
 
     // Adds *pixel* to *lista* in an ordered way
-    private void addPixelOrderedly(Pixel pixel, List<Pixel> lista){
-        lista.add(findRightPosition(pixel, lista), pixel);
-    }
+
 
     /***********************************************************************************************************
      ***********************************************************************************************************/
