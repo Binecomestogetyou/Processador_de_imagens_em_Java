@@ -133,6 +133,8 @@ public class OperadordeImagens {
 
         System.out.println("Finished getting all frequencies\nIt took " + tempo / 60 + "min e " + tempo % 60 + "seg to get all frequencies");
 
+        /* Testar se as listas estão realmente ordenadas */
+
 
 
         ////////////////////////////////////////////////////////////

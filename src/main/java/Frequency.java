@@ -69,27 +69,26 @@ public class Frequency {
 
     public static void incrementFrequenciesList(Pixel pixel, Frequency frequency){
 
+        int aux;
         List<Pixel> pixelList = frequency.pixel.get(pixel.getRed()%16).get(pixel.getGreen()%16).get(pixel.getBlue()%16);
         List<Integer> frequencyList = frequency.frequency.get(pixel.getRed()%16).get(pixel.getGreen()%16).get(pixel.getBlue()%16);
 
-        int position = pixelList.indexOf(pixel);
-
-        if(position != -1){
-            int aux = frequencyList.get(position) + 1;
-
-            frequencyList.remove(position);
-
-            try{
-                frequencyList.add(position, aux);
-            }
-            catch (IndexOutOfBoundsException e){
-                frequencyList.add(aux);
-            }
-        }
-        else {
-            int aux = pixel.findPosition(pixelList);
+        if(pixelList.isEmpty()) {
             pixelList.add(pixel);
             frequencyList.add(1);
+        }
+        else {
+            int position = pixel.findPosition(pixelList, 0, pixelList.size() - 1);
+
+
+            if (position <= 0) {
+                    aux = frequencyList.get(-position);
+                    frequencyList.remove(-position);
+                    frequencyList.add(-position, ++aux);
+            } else {
+                pixelList.add(position, pixel);
+                frequencyList.add(1);
+            }
         }
     }
 }

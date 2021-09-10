@@ -43,39 +43,76 @@ public class Pixel {
     /***********************************************************
      **********************************************************/
 
-    public int compareRed(Pixel comparer){
+    public int compareRed(Pixel compared){
 
-        return Integer.compare(this.array[0], comparer.array[0]);
+        return Integer.compare(this.array[0], compared.array[0]);
     }
 
     /***********************************************************
      **********************************************************/
 
-    int findPosition(List<Pixel> list){
-        int toReturn;
-        if(!list.contains(this)) toReturn = list.indexOf(this);
-        else{
-            toReturn = this.findPosition(list, 0, list.size() - 1);
-        }
+    public int compareBlue(Pixel compared){
 
-        return toReturn;
+        return Integer.compare(this.array[2], compared.array[2]);
     }
 
+    /***********************************************************
+     **********************************************************/
+
+    public int compareGreen(Pixel compared){
+
+        return Integer.compare(this.array[1], compared.array[1]);
+    }
+
+    /***********************************************************
+     **********************************************************/
+
     int findPosition(List<Pixel> list, int left, int right){
-        int middle = (right - left)/2;
-        /* Find Red */
+        int position = 0;
 
-        switch(this.compareRed(list.get(middle))){
-            case -1:
-                this.findPosition(list, left, middle);
-                break;
+        if(left == right){
+            switch (this.compareRed(list.get(left))) {
+                case -1 -> position = left - 1;
+                case 0 -> position = switch (this.compareGreen(list.get(left))) {
+                    case -1 -> left - 1;
+                    case 0 -> switch (this.compareBlue(list.get(left))) {
+                        case -1 -> left - 1;
+                        case 0 -> -left;
+                        case 1 -> left + 1;
+                        default -> position;
+                    };
+                    case 1 -> left + 1;
+                    default -> position;
+                };
+                case 1 -> position = left + 1;
+            }
+        }
+        else {
 
-            case 0:
-                break;
+            int middle = (right - left) / 2;
 
-            case 1:
-                this.findPosition(list, middle, right);
+            position = switch (this.compareRed(list.get(middle))) {
+                case -1 -> this.findPosition(list, left, middle);
+                case 0 -> switch (this.compareGreen(list.get(middle))) {
+                    case -1 -> this.findPosition(list, left, middle);
+                    case 0 -> switch (this.compareBlue(list.get(middle))) {
+                        case -1 -> this.findPosition(list, left, middle);
+                        case 0 -> -middle;
+                        case 1 -> this.findPosition(list, middle, right);
+                        default -> position;
+                    };
+                    case 1 -> this.findPosition(list, middle, right);
+                    default -> position;
+                };
+                case 1 -> this.findPosition(list, middle, right);
+                default -> position;
+            };
         }
 
+        return position;
+    }
+
+    public String toString(){
+        return "(" + this.getRed() + ", " + this.getGreen() + ", " + this.getBlue() + ")";
     }
 }
