@@ -9,7 +9,8 @@ public class principal {
 
         BufferedImage origem = newBufferedImage();
 
-      //  OperadordeImagens.pixelador(origem, 9);
+        OperadordeImagens operadordeImagens = new OperadordeImagens();
+        operadordeImagens.pixelador(origem, 9);
     }
 
     static BufferedImage newBufferedImage(){

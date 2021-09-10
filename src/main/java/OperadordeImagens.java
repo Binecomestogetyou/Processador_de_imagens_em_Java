@@ -109,9 +109,9 @@ public class OperadordeImagens {
 
     // O parametro fator indica o nivel de pixelagem d a imagem. Quanto mais baixo o fator,
     // mais próxima a imagem final ficará da real
-    static void pixelador (BufferedImage origem, int fator)  {
+    void pixelador (BufferedImage origem, int fator)  {
         ImageToolkit pixeladorToolkit = new ImageToolkit(origem);
-        List<int[]> allFrequencies = new ArrayList<>();
+        Frequency allFrequencies = new Frequency();
         BufferedImage nova_imagem = new BufferedImage(origem.getWidth(), origem.getHeight(), origem.getType());
         WritableRaster fonte = origem.getRaster();
         WritableRaster destino = nova_imagem.getRaster();
@@ -122,15 +122,42 @@ public class OperadordeImagens {
         List<List<int[]>> partition = new ArrayList<>();
 
 
-        // Now we're gonna get the frequencies of each color
-        getFrequencies(pixeladorToolkit.fnt_raster, allFrequencies);
+        tempo = System.nanoTime();
 
+
+        // Now we're gonna get the frequencies of each color
+        Frequency.getFrequencies(pixeladorToolkit.fnt_raster, allFrequencies);
+
+        tempo = System.nanoTime() - tempo;
+        tempo = (long) (tempo / 1E9);
+
+        System.out.println("Finished getting all frequencies\nIt took " + tempo / 60 + "min e " + tempo % 60 + "seg to get all frequencies");
+
+        /* Testar se as listas estão realmente ordenadas */
+
+
+
+        ////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////
+
+        //////////////////////////////////////////////////////////////
+
+        ///////////////////////////////////////////////////////////////
+
+        BufferedWriter writer = null;
+
+        try {
+            writer = new BufferedWriter(new FileWriter("/media/pan/13d6a39b-d40a-45dd-aea4-56393048d009/Programação/codigos_programas/java/filtro_de_imagens/out/frequencias"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(666);
+        }
 
 
       /*  for(int i = 0; i < 20 ; i++){
             int[] a= allFrequencies.get(i);
             System.out.println("Color "+a[0]+" "+a[1]+" "+a[2]+" appears "+ a[3]+" times\n");
-        }*/
+        }
 
 
         System.out.println("Finished saving frequencies");
@@ -264,39 +291,57 @@ public class OperadordeImagens {
             ImageIO.write( nova_imagem, "JPEG", novo);
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
 
     }
 
     /***********************************************************************************************************
      ***********************************************************************************************************/
 
-    private void getFrequencies(WritableRaster raster, List<int[]> lista) {
 
-        int altura = raster.getHeight();
-        int largura = raster.getWidth();
-        int bandas = raster.getNumBands();
-        int[] array_aux = new int[bandas];
-
-        for(int linha = 0; linha < altura; linha++){
-            for(int pixel = 0; pixel < largura; largura++){
-                raster.getPixel(pixel, altura, array_aux);
-                addPixelOrderedly(array_aux, lista);
-
-            }
-        }
-    }
 
     /***********************************************************************************************************
      ***********************************************************************************************************/
 
     // Adds *pixel* to *lista* in an ordered way
-    private void addPixelOrderedly(int[] pixel, List<int[]> lista){
 
+
+    /***********************************************************************************************************
+     ***********************************************************************************************************/
+
+    private int findRightPosition(Pixel pixel, List<Pixel> lista) {
+
+        if(lista.isEmpty()) return  0;
+        else if(lista.size() == 1) {
+            if (pixel.compareRed(lista.get(0)) != 1) return 0;
+            else return 1;
+        }
+        else{
+            int extremeLeft = 0, extremeRight = lista.size()-1, pivot = (int)(extremeLeft + extremeRight)/2;
+
+            while(extremeRight-extremeLeft > 1){
+                switch (pixel.compareRed(lista.get(pivot))){
+                    case 1:
+                        extremeLeft = pivot;
+                        break;
+
+                    case 0:
+                        return pivot;
+
+                    case -1:
+                        extremeRight = pivot;
+                }
+            }
+
+            if (pixel.compareRed(lista.get(extremeLeft)) != 1) return extremeLeft;
+            else if(pixel.compareRed(lista.get(extremeRight)) != 1) return extremeRight;
+            else return extremeRight+1;
+        }
     }
 
     /***********************************************************************************************************
      ***********************************************************************************************************/
+
 
     private static boolean findArray(int[] array, List<List<int[]>> list) {
         int pivot = array[0]/16;
